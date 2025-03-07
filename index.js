@@ -1,14 +1,14 @@
 const express = require('express');
 const app = express()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = 5000
 const  cors = require('cors')
 app.use(cors())
 app.use(express.json())
 
-app.get('/users',(req,res)=> {
-    res.send('this is user page ')
-})
+// app.get('/users',(req,res)=> {
+//     res.send('this is user page ')
+// })
 
 // mongodb added 
 
@@ -40,7 +40,20 @@ async function run() {
     })
 
     // read operation 
-    
+    app.get('/users',async(req,res)=> {
+        const cursor = db.find()
+        const result =await cursor.toArray()
+        res.send(result)
+    })
+    // find a document
+    app.get('/user/:id',async(req,res)=> {
+        const id = req.params.id
+        const filter = {_id:new ObjectId(id)}
+        const result = await db.findOne(filter)
+        res.send(result)
+
+        console.log("🚀 ~ app.get ~ id:", id)
+    })
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
