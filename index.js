@@ -55,6 +55,41 @@ async function run() {
         console.log("🚀 ~ app.get ~ id:", id)
     })
 
+
+
+    // update doc 
+  app.get('/update/:id',async(req,res)=> {
+    const id = req.params.id
+    const filter = {_id: new ObjectId(id)}
+    const result = await db.findOne(filter)
+    res.send(result)
+  })
+    app.put('/update/:id',async(req,res)=> {
+        const id = req.params.id
+        const data = req.body
+        const filter = {_id: new ObjectId(id)}
+
+        const options = { upsert: true };
+        const updatedDoc = {
+            $set:{
+                name:data.name,
+                email:data.email,
+                detail:data.detail
+            }
+        }
+        const result = db.updateOne(filter,updatedDoc,options)
+        res.send(result)
+
+    })
+
+    app.delete('/delete/:id',async(req,res)=> {
+        const id = req.params.id
+        console.log("🚀 ~ app.delete ~ id:", id)
+        const filter = {_id: new ObjectId(id)}
+        const result =await db.deleteOne(filter)
+        res.send(result)
+    })
+
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
